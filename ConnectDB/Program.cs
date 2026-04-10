@@ -7,14 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Đăng ký Controller và xử lý vòng lặp JSON
+// 2. Đăng ký Controller
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// 3. Đăng ký Swagger/OpenAPI
+// 3. Đăng ký Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -22,23 +22,22 @@ var app = builder.Build();
 
 // --- CẤU HÌNH PIPELINE ---
 
-// BẬT SWAGGER CHO MỌI MÔI TRƯỜNG (Cả Local và Render)
+// Bật Swagger cho mọi môi trường
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ConnectDB v1");
-    // Để trống RoutePrefix giúp bạn vào thẳng https://studentshop.onrender.com là thấy Swagger ngay
-    c.RoutePrefix = string.Empty;
+    c.RoutePrefix = string.Empty; // Vào thẳng link gốc là thấy Swagger
 });
 
-// Chỉ dùng HTTPS Redirection ở local nếu cần, trên Render thường đã có sẵn load balancer xử lý
+// CHỈ dùng HttpsRedirection khi chạy ở LOCAL (Development)
+// Trên Render, họ đã tự xử lý HTTPS rồi, mình dùng cái này sẽ bị lỗi Redirect
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
