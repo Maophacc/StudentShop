@@ -3,35 +3,39 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Đăng ký SQL Server
+// 1. Đăng ký SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Add services to the container.
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// 2. Đăng ký Controller và xử lý vòng lặp JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Chặn lỗi vòng lặp vô hạn khi Include các bảng liên kết
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
+
+// 3. Đăng ký Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- CẤU HÌNH PIPELINE ---
+
+// BẬT SWAGGER CHO MỌI MÔI TRƯỜNG (Cả Local và Render)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ConnectDB v1");
+    // Để trống RoutePrefix giúp bạn vào thẳng https://studentshop.onrender.com là thấy Swagger ngay
+    c.RoutePrefix = string.Empty;
+});
+
+// Chỉ dùng HTTPS Redirection ở local nếu cần, trên Render thường đã có sẵn load balancer xử lý
 if (app.Environment.IsDevelopment())
 {
-    // Cho phép Swagger chạy ở cả môi trường Production
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ConnectDB v1");
-        c.RoutePrefix = "swagger"; // Truy cập qua domain.com/swagger
-    });
+    app.UseHttpsRedirection();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
