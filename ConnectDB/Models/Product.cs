@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConnectDB.Models
@@ -10,11 +10,24 @@ namespace ConnectDB.Models
 
         [Required]
         [MaxLength(50)]
-        public string SKU { get; set; }
+        public string SKU { get; set; } // For stock keeping unit
 
         [Required]
         [MaxLength(200)]
         public string Name { get; set; }
+
+        public string? Description { get; set; }
+        
+        public string? ImageUrl { get; set; }
+
+        [Required]
+        public decimal Price { get; set; }
+
+        [Required]
+        public int Stock { get; set; }
+
+        [Required]
+        public string Status { get; set; } // InStock, OutOfStock
 
         // Khóa ngoại liên kết tới Category
         [Required]
@@ -27,8 +40,5 @@ namespace ConnectDB.Models
         public int BrandId { get; set; }
         [ForeignKey("BrandId")]
         public virtual Brand? Brand { get; set; }
-
-        // Navigation Property: 1 Product có nhiều mã IMEI
-        public virtual ICollection<SerialNumber>? SerialNumbers { get; set; }
     }
 }

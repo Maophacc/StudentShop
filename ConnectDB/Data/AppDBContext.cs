@@ -1,5 +1,4 @@
-﻿using ConnectDB.Models;
-using ConnectDB.Modles;
+using ConnectDB.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConnectDB.Data;
@@ -7,20 +6,25 @@ public class AppDbContext : DbContext
 {
     // Constructor này bắt buộc phải có để nhận Connection String từ Program.cs
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-    public DbSet<Student> Students { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
-    public DbSet<SerialNumber> SerialNumbers { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Promotion> Promotions { get; set; }
+    public DbSet<Voucher> Vouchers { get; set; }
+    public DbSet<PaymentMethod> PaymentMethods { get; set; }
+    public DbSet<SalesOrder> SalesOrders { get; set; }
+    public DbSet<OrderDetail> OrderDetails { get; set; }
+    public DbSet<Bill> Bills { get; set; }
+    public DbSet<Combo> Combos { get; set; }
+    public DbSet<RevenueSnapshot> RevenueSnapshots { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Thiết lập Unique Key cho cột IMEI (Quy tắc BR1)
-        modelBuilder.Entity<SerialNumber>()
-            .HasIndex(s => s.ImeiCode)
-            .IsUnique();
+        // Giúp PostgreSQL hiểu kiểu DateTime của .NET
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
 }

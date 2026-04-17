@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace ConnectDB.Models 
 {
@@ -20,10 +20,10 @@ namespace ConnectDB.Models
         public string FullName { get; set; }
 
         [Required]
-        [MaxLength(20)]
-        public string Role { get; set; } // Ví dụ: "Admin" hoặc "Staff"
+        public int RoleId { get; set; }
+        public virtual Role? Role { get; set; }
 
         // Navigation Property: 1 User có thể tạo nhiều Phiếu giao dịch
-        public virtual ICollection<InventoryTransaction> InventoryTransactions { get; set; }
+        public virtual ICollection<InventoryTransaction>? InventoryTransactions { get; set; }
     }
 }
