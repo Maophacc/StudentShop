@@ -1,4 +1,4 @@
-﻿using ConnectDB.Data;
+using ConnectDB.Data;
 
 using Microsoft.EntityFrameworkCore;
 // Không cần thêm using Npgsql ở đây, nhưng UseNpgsql sẽ tự nhận diện sau khi cài package thành công
@@ -19,6 +19,18 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// 4. Cho phép Frontend ở mọi nơi gọi tới (CORS)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 // --- CẤU HÌNH PIPELINE ---
@@ -37,6 +49,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+app.UseCors("AllowAll"); // Rất quan trọng: Phải đặt trước Authorization
 
 app.UseAuthorization();
 app.MapControllers();
