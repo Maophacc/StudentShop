@@ -26,5 +26,11 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         // Giúp PostgreSQL hiểu kiểu DateTime của .NET
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+        // Seed dữ liệu Role mặc định (0: User, 1: Admin)
+        modelBuilder.Entity<Role>().HasData(
+            new Role { RoleId = 0, RoleName = "User" },
+            new Role { RoleId = 1, RoleName = "Admin" }
+        );
     }
 }

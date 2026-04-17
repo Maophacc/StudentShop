@@ -33,18 +33,13 @@ namespace ConnectDB.Controllers
             if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
                 return BadRequest("Email đã được sử dụng.");
 
-            // Lấy role mặc định (vd: Khách hàng)
-            var customerRole = await _context.Roles.FirstOrDefaultAsync(r => r.RoleName == "Customer");
-            if (customerRole == null)
-                return StatusCode(500, "Role 'Customer' chưa được tạo trong DB.");
-
             var user = new User
             {
                 Username = dto.Username,
                 Email = dto.Email,
                 FullName = dto.FullName,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                RoleId = customerRole.RoleId
+                RoleId = 0 // 0 = User
             };
 
             _context.Users.Add(user);
@@ -147,7 +142,7 @@ namespace ConnectDB.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "Customer")
+                new Claim(ClaimTypes.Role, user.Role?.RoleName ?? "User")
             };
 
             var token = new JwtSecurityToken(
