@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace ConnectDB.Models
@@ -6,6 +7,7 @@ namespace ConnectDB.Models
     public class Role
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int RoleId { get; set; }
 
         [Required]
