@@ -12,8 +12,18 @@ namespace ConnectDB.Models
         public string Username { get; set; }
 
         [Required]
+        [EmailAddress]
+        [MaxLength(255)]
+        public string Email { get; set; }
+
+        [Required]
         [MaxLength(255)]
         public string PasswordHash { get; set; } // Thực tế phải mã hóa, không lưu password trơn nhé
+
+        [MaxLength(255)]
+        public string? ResetToken { get; set; }
+
+        public DateTime? ResetTokenExpiry { get; set; }
 
         [Required]
         [MaxLength(100)]
