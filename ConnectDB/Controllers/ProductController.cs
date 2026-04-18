@@ -63,5 +63,39 @@ namespace ConnectDB.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, Product product)
+        {
+            if (id != product.ProductId) return BadRequest("ProductId mismatch");
+
+            var existingProduct = await _context.Products.FindAsync(id);
+            if (existingProduct == null) return NotFound();
+
+            existingProduct.Name = product.Name;
+            existingProduct.SKU = product.SKU;
+            existingProduct.Description = product.Description;
+            existingProduct.Price = product.Price;
+            existingProduct.Stock = product.Stock;
+            existingProduct.Status = product.Stock > 0 ? "InStock" : "OutOfStock";
+            existingProduct.CategoryId = product.CategoryId;
+            existingProduct.BrandId = product.BrandId;
+            existingProduct.ImageUrl = product.ImageUrl;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

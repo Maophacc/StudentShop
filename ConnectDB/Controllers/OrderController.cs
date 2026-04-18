@@ -42,7 +42,7 @@ namespace ConnectDB.Controllers
 
                     // Deduct stock
                     product.Stock -= item.Quantity;
-                    if(product.Stock == 0) product.Status = "OutOfStock";
+                    if (product.Stock == 0) product.Status = "OutOfStock";
 
                     var detail = new OrderDetail
                     {
@@ -70,7 +70,7 @@ namespace ConnectDB.Controllers
                             discount = subtotal * (voucher.Promotion.Value / 100);
                         else if (voucher.Promotion.Type == "FixedAmount")
                             discount = voucher.Promotion.Value;
-                        
+
                         voucher.CurrentUsages++;
                     }
                 }
@@ -100,6 +100,33 @@ namespace ConnectDB.Controllers
                 await transaction.RollbackAsync();
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        // GET: api/Order
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<SalesOrder>>> GetOrders()
+        {
+            return await _context.SalesOrders
+                .Include(o => o.Customer)
+                .Include(o => o.Bill)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
+
+        // GET: api/Order/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<SalesOrder>> GetOrder(int id)
+        {
+            var order = await _context.SalesOrders
+                .Include(o => o.Customer)
+                .Include(o => o.Bill)
+                .Include(o => o.OrderDetails!)
+                    .ThenInclude(d => d.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order == null) return NotFound();
+
+            return order;
         }
     }
 

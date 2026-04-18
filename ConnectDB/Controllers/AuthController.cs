@@ -129,6 +129,42 @@ namespace ConnectDB.Controllers
             return Ok(new { Message = "Đổi mật khẩu thành công!" });
         }
 
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) return Unauthorized("Vui lòng đăng nhập.");
+
+            var user = await _context.Users.Include(u => u.Role)
+                                           .FirstOrDefaultAsync(u => u.UserId == int.Parse(userIdClaim.Value));
+            if (user == null) return NotFound("User không tồn tại.");
+
+            return Ok(new
+            {
+                user.UserId,
+                user.Username,
+                user.Email,
+                user.FullName,
+                Role = user.Role?.RoleName
+            });
+        }
+
+        [HttpGet("users")]
+        public async Task<ActionResult<IEnumerable<object>>> GetUsers()
+        {
+            var users = await _context.Users.Include(u => u.Role)
+                .Select(u => new {
+                    u.UserId,
+                    u.Username,
+                    u.Email,
+                    u.FullName,
+                    Role = u.Role != null ? u.Role.RoleName : "User"
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
         private string GenerateJwtToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
