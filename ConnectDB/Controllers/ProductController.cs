@@ -30,7 +30,7 @@ namespace ConnectDB.Controllers
             var query = _context.Products.Include(p => p.Category).Include(p => p.Brand).AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
-                query = query.Where(p => p.Name.Contains(search) || p.SKU.Contains(search));
+                query = query.Where(p => p.Name.Contains(search) || p.ProductCode.Contains(search));
 
             if (categoryId.HasValue)
                 query = query.Where(p => p.CategoryId == categoryId);
@@ -110,7 +110,7 @@ namespace ConnectDB.Controllers
             if (existingProduct == null) return NotFound();
 
             existingProduct.Name = product.Name;
-            existingProduct.SKU = product.SKU;
+            existingProduct.ProductCode = product.ProductCode;
             existingProduct.Description = product.Description;
             existingProduct.Price = product.Price;
             existingProduct.Stock = product.Stock;

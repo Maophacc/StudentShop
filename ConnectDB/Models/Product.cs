@@ -10,7 +10,7 @@ namespace ConnectDB.Models
 
         [Required]
         [MaxLength(200)]
-        public string SKU { get; set; } // For stock keeping unit
+        public string ProductCode { get; set; } // Mã sản phẩm
 
         [Required]
         [MaxLength(500)]
