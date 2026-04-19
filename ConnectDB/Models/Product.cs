@@ -9,11 +9,11 @@ namespace ConnectDB.Models
         public int ProductId { get; set; }
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(200)]
         public string SKU { get; set; } // For stock keeping unit
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(500)]
         public string Name { get; set; }
 
         public string? Description { get; set; }

@@ -105,6 +105,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll"); // Rất quan trọng: Phải đặt trước Authorization
+app.UseStaticFiles(); // Cho phép truy cập các file trong wwwroot (như ảnh sản phẩm)
 
 app.UseAuthentication(); // Phải gọi Authentication trước Authorization
 app.UseAuthorization();

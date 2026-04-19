@@ -18,7 +18,14 @@ namespace ConnectDB.Controllers
 
         // GET: api/Product
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string? search, int? categoryId, int? brandId)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
+            string? search, 
+            int? categoryId, 
+            int? brandId,
+            string? sortBy = "productId",
+            string? sortOrder = "desc",
+            int pageNumber = 0,
+            int pageSize = 100)
         {
             var query = _context.Products.Include(p => p.Category).Include(p => p.Brand).AsQueryable();
 
@@ -31,7 +38,37 @@ namespace ConnectDB.Controllers
             if (brandId.HasValue)
                 query = query.Where(p => p.BrandId == brandId);
 
-            return await query.ToListAsync();
+            // Sorting logic
+            if (sortBy?.ToLower() == "random")
+            {
+                query = query.OrderBy(p => Guid.NewGuid());
+            }
+            else
+            {
+                bool isDesc = sortOrder?.ToLower() == "desc";
+                switch (sortBy?.ToLower())
+                {
+                    case "name":
+                        query = isDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name);
+                        break;
+                    case "price":
+                        query = isDesc ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price);
+                        break;
+                    case "discount":
+                        // Giả sử có trường Discount hoặc tính toán gì đó, ở đây ví dụ sắp xếp theo Price nếu không có Discount
+                        query = isDesc ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price);
+                        break;
+                    default:
+                        query = isDesc ? query.OrderByDescending(p => p.ProductId) : query.OrderBy(p => p.ProductId);
+                        break;
+                }
+            }
+
+            // Pagination logic
+            return await query
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         // GET: api/Product/5

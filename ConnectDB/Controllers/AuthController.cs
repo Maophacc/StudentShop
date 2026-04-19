@@ -52,10 +52,10 @@ namespace ConnectDB.Controllers
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var user = await _context.Users.Include(u => u.Role)
-                                           .FirstOrDefaultAsync(u => u.Username == dto.Username);
+                                           .FirstOrDefaultAsync(u => u.Username == dto.Username || u.Email == dto.Username);
             
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-                return Unauthorized("Tài khoản hoặc mật khẩu không đúng.");
+                return Unauthorized(new { Message = "Tài khoản hoặc mật khẩu không đúng." });
 
             var token = GenerateJwtToken(user);
 
