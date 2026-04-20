@@ -9,11 +9,12 @@ namespace ConnectDB.Models
         public int ProductId { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [MaxLength(50)]
+        [Column("SKU")]
         public string ProductCode { get; set; } // Mã sản phẩm
 
         [Required]
-        [MaxLength(500)]
+        [MaxLength(200)]
         public string Name { get; set; }
 
         public string? Description { get; set; }

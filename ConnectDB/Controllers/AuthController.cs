@@ -66,6 +66,7 @@ namespace ConnectDB.Controllers
                 User = new { 
                     user.UserId, 
                     user.Username, 
+                    user.Email,
                     user.FullName, 
                     Role = user.Role?.RoleName 
                 }
