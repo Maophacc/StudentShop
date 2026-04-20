@@ -158,6 +158,18 @@ namespace ConnectDB.Controllers
 
             return order;
         }
+
+        // GET: api/Order/user/5
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<SalesOrder>>> GetOrdersByUserId(int userId)
+        {
+            return await _context.SalesOrders
+                .Include(o => o.Customer)
+                .Include(o => o.Bill)
+                .Where(o => o.UserId == userId)
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
     }
 
     public class CheckoutRequest
