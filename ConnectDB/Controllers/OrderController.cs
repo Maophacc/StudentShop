@@ -149,7 +149,8 @@ namespace ConnectDB.Controllers
         {
             var order = await _context.SalesOrders
                 .Include(o => o.Customer)
-                .Include(o => o.Bill)
+                .Include(o => o.Bill!)
+                    .ThenInclude(b => b.PaymentMethod)
                 .Include(o => o.OrderDetails!)
                     .ThenInclude(d => d.Product)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
@@ -165,7 +166,8 @@ namespace ConnectDB.Controllers
         {
             return await _context.SalesOrders
                 .Include(o => o.Customer)
-                .Include(o => o.Bill)
+                .Include(o => o.Bill!)
+                    .ThenInclude(b => b.PaymentMethod)
                 .Where(o => o.UserId == userId)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
