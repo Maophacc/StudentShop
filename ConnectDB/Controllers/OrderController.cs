@@ -31,12 +31,27 @@ namespace ConnectDB.Controllers
                     request.PaymentMethodId = defaultMethod.PaymentMethodId;
                 }
 
+                // Create or Link Customer from Shipping Details
+                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Phone == request.ShippingPhone);
+                if (customer == null)
+                {
+                    customer = new Customer
+                    {
+                        CustomerName = request.ShippingName ?? "Guest",
+                        Phone = request.ShippingPhone ?? "N/A",
+                        Address = request.ShippingAddress ?? "N/A"
+                    };
+                    _context.Customers.Add(customer);
+                    await _context.SaveChangesAsync();
+                }
+
                 // Create SalesOrder
                 var order = new SalesOrder
                 {
                     OrderDate = DateTime.UtcNow,
                     Status = "Pending",
                     UserId = request.UserId,
+                    CustomerId = customer.CustomerId, // Link to the customer record
                     OrderDetails = new List<OrderDetail>()
                 };
 
@@ -150,6 +165,9 @@ namespace ConnectDB.Controllers
         public int UserId { get; set; }
         public int PaymentMethodId { get; set; }
         public string? VoucherCode { get; set; }
+        public string? ShippingName { get; set; }
+        public string? ShippingPhone { get; set; }
+        public string? ShippingAddress { get; set; }
         public List<OrderItemRequest> Items { get; set; }
     }
 
