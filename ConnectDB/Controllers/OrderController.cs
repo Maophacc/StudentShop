@@ -135,10 +135,10 @@ namespace ConnectDB.Controllers
         public int? CustomerId { get; set; }
         public int PaymentMethodId { get; set; }
         public string? VoucherCode { get; set; }
-        public List<CartItem> Items { get; set; }
+        public List<OrderItemRequest> Items { get; set; }
     }
 
-    public class CartItem
+    public class OrderItemRequest
     {
         public int ProductId { get; set; }
         public int Quantity { get; set; }
