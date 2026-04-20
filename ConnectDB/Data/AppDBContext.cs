@@ -21,6 +21,7 @@ public class AppDbContext : DbContext
     public DbSet<Bill> Bills { get; set; }
     public DbSet<Combo> Combos { get; set; }
     public DbSet<RevenueSnapshot> RevenueSnapshots { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
