@@ -22,12 +22,21 @@ namespace ConnectDB.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
+                // Ensure at least one Payment Method exists for testing/operation
+                if (!await _context.PaymentMethods.AnyAsync())
+                {
+                    var defaultMethod = new PaymentMethod { Name = "Tiền mặt (COD)", IsActive = true };
+                    _context.PaymentMethods.Add(defaultMethod);
+                    await _context.SaveChangesAsync();
+                    request.PaymentMethodId = defaultMethod.PaymentMethodId;
+                }
+
                 // Create SalesOrder
                 var order = new SalesOrder
                 {
                     OrderDate = DateTime.UtcNow,
                     Status = "Pending",
-                    CustomerId = request.CustomerId,
+                    UserId = request.UserId,
                     OrderDetails = new List<OrderDetail>()
                 };
 
@@ -91,6 +100,12 @@ namespace ConnectDB.Controllers
 
                 _context.Bills.Add(bill);
                 await _context.SaveChangesAsync();
+
+                // Clear Cart for this user
+                var cartItems = _context.CartItems.Where(c => c.UserId == request.UserId);
+                _context.CartItems.RemoveRange(cartItems);
+                await _context.SaveChangesAsync();
+
                 await transaction.CommitAsync();
 
                 return Ok(new { OrderId = order.OrderId, TotalAmount = total, BillDetails = bill });
@@ -132,7 +147,7 @@ namespace ConnectDB.Controllers
 
     public class CheckoutRequest
     {
-        public int? CustomerId { get; set; }
+        public int UserId { get; set; }
         public int PaymentMethodId { get; set; }
         public string? VoucherCode { get; set; }
         public List<OrderItemRequest> Items { get; set; }
