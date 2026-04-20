@@ -18,7 +18,7 @@ namespace ConnectDB.Controllers
 
         // GET: api/Product
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(
+        public async Task<ActionResult<object>> GetProducts(
             string? search, 
             int? categoryId, 
             int? brandId,
@@ -65,10 +65,20 @@ namespace ConnectDB.Controllers
             }
 
             // Pagination logic
-            return await query
+            var totalCount = await query.CountAsync();
+            var items = await query
                 .Skip(pageNumber * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
+            return Ok(new
+            {
+                Products = items,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
         }
 
         // GET: api/Product/5
